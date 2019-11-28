@@ -1,0 +1,33 @@
+function month_date=get_output_series(start_date,end_date)
+%统一格式
+start_date=datestr(start_date,26);
+end_date=datestr(end_date,26);
+%将开始日化为数字型年月日s
+s=datevec(start_date);
+s=s(1:3);
+%将结束日化为数字型年月日e
+e=datevec(end_date);
+e=e(1:3);
+output_series=[];
+if(s(1)==e(1) && s(2)==e(2))
+    %如果输出序列只会包含一个日期的情况
+else%输出序列包含多个日期的情况
+    output_series(1,1:3)=[s(1:2),eomday(s(1),s(2))];
+    series_num=(e(1)-s(1))*12+(e(2)-s(2))+1;%相差月份数=(e1-s1)*12+(e2-s2)=series项数-1
+    for(i=2:series_num-1)
+        output_series(i,1)=output_series(i-1,1);
+        output_series(i,2)=output_series(i-1,2)+1;
+        if(output_series(i,2)==13)
+            output_series(i,1)=output_series(i,1)+1;
+            output_series(i,2)=1;
+        end
+        output_series(i,3)=eomday(output_series(i,1),output_series(i,2));
+    end
+end
+output_series(end+1,1:3)=e(1:3);
+%将数值型日期转换为cell形式
+[m,n]=size(output_series);
+for(i=1:m)
+    month_date(i)=cellstr(datestr(datenum(output_series(i,1),output_series(i,2),output_series(i,3)),26));
+end
+end
